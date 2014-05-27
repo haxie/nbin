@@ -1,23 +1,23 @@
-var logger = require('koa-logger');
-var router = require('koa-router');
-var parse = require('co-body');
-var serve = require('koa-static');
 var koa = require('koa');
-var views = require('co-views');
-var spawn = require('child_process').spawn;
+var logger = require('koa-logger');
 var markdown = require('markdown').markdown;
-
 var monk = require('monk');
+var parse = require('co-body');
+var router = require('koa-router');
+var serve = require('koa-static');
+var spawn = require('child_process').spawn;
+var views = require('co-views');
 var wrap = require('co-monk');
+
 var db = monk('localhost/pastebin');
 var collection = db.get('pastes');
+var pastes = wrap(collection);
 
 var app = koa();
 
 app.use(logger());
 app.use(router(app));
 
-var pastes = wrap(collection);
 
 app.get('/', index);
 app.get('/:id', show);
@@ -59,7 +59,6 @@ function *create() {
     var keylen = 2;
     paste.id = Math.floor(Math.random()*16777215).toString(16).substr(0,keylen);
 
-    // Make sure our ID is unique
     while(yield pastes.findOne({id: paste.id})) {
        keylen++; 
        paste.id = Math.floor(Math.random()*16777215).toString(16).substr(0,keylen);
