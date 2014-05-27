@@ -1,0 +1,23 @@
+{
+  "name": "nbin",
+  "version": "0.0.1",
+  "description": "ERROR: No README.md file found!",
+  "main": "app.js",
+  "dependencies": {
+    "co-body": "~0.0.1",
+    "co-monk": "~1.0.0",
+    "co-views": "~0.2.0",
+    "jade": "~1.3.1",
+    "koa": "~0.6.1",
+    "koa-logger": "~1.2.1",
+    "koa-route": "~1.1.4",
+    "koa-static": "~1.4.5",
+    "monk": "~0.9.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "BSD"
+}

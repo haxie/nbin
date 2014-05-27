@@ -1,0 +1,44 @@
+extends layout
+
+block title
+  title= 'Pastebin'
+
+block content
+  h1 New paste 
+  form(action="/paste/create", method="post")
+    p
+      label(for="name") Title
+      input(type="text", placeholder="Paste Name", name="name", id="name")
+
+    p
+        label(for="code") Code
+        textarea(name="code", id="code" placeholder="Code goes here" cols="60", rows="20")
+    p
+          select(name="syntax", tabindex="4")
+            option(value="apache") Apache
+            option(value="bash") Bash
+            option(value="c") C
+            option(value="cl") Common Lisp 
+            option(value="coffeescript") CoffeeScript
+            option(value="css") CSS
+            option(value="erlang") Erlang 
+            option(value="haskell") Haskell 
+            option(value="html") HTML
+            option(value="irc") IRC Logs 
+            option(value="javascript") JavaScript
+            option(value="lua") Lua
+            option(value="mysql") MySQL
+            option(value="nginx") Nginx
+            option(value="pcre") PCRE
+            option(value="perl") Perl
+            option(value="php") PHP
+            option(value="postgresql") PostgreSQL
+            option(value="python") Python
+            option(value="ruby") Ruby
+            option(value="scheme") Scheme 
+            option(value="sql") SQL
+            option(value="text") Text / Markdown
+            option(value="vim") Vim 
+            option(value="xml") XML
+    p
+      input(type="submit", value="Add", class="button")

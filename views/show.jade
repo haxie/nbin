@@ -1,0 +1,16 @@
+extends layout
+
+block title
+    title= paste.name
+
+block content
+    div(id="content")
+        div(class="meta")
+            a(class="fork" href="/f/"+paste.id) Fork
+            span= ' / '
+            a(class="fork" href="/r/"+paste.id) Raw 
+        h1= paste.name
+        
+        p.code!= paste.code
+        div.created
+            time(date="#{paste.created_on.toDateString()}") #{paste.created_on.toDateString()}
