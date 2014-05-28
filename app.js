@@ -69,7 +69,6 @@ function *shorten() {
     }
 
     paste.created_on = new Date;
-    paste.type = "url";
     pastes.insert(paste);
 
     this.body = root + "/" + paste.id;
