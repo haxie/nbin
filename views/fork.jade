@@ -5,7 +5,7 @@ block title
 
 block content
   h1= 'Fork of ' + paste.name
-  form(action="/paste/create", method="post")
+  form(action="/create", method="post")
     p
       label(for="name") Title
       input(type="text", placeholder="Paste Name", name="name", id="name" value=paste.name + ' (forked)')

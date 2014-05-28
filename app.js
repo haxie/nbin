@@ -1,3 +1,5 @@
+var fileparse = require('co-busboy');
+var fs = require('fs');
 var koa = require('koa');
 var logger = require('koa-logger');
 var markdown = require('markdown').markdown;
@@ -9,21 +11,22 @@ var spawn = require('child_process').spawn;
 var views = require('co-views');
 var wrap = require('co-monk');
 
-var db = monk('localhost/pastebin');
+var db = monk('localhost/pastebin'); // Your database
 var collection = db.get('pastes');
 var pastes = wrap(collection);
+var root = "http://localhost:3000"; // Your server URL
 
 var app = koa();
 
 app.use(logger());
 app.use(router(app));
 
-
 app.get('/', index);
 app.get('/:id', show);
 app.get('/f/:id', fork);
 app.get('/r/:id', raw);
-app.post('/paste/create', create);
+app.post('/create', create);
+app.post('/upload', upload);
 
 var render = views(__dirname + '/views', { map: { jade: 'jade' }, default: 'jade' });
 
@@ -34,14 +37,14 @@ function *index() {
 function *fork() {
     var id = this.params.id;
     var res = yield pastes.findOne({id: id}); 
-    if(!res) this.throw(404,'Invalid paste');
+    if (!res) this.throw(404,'Invalid paste');
     this.body = yield render('fork', { paste: res });
 }
 
 function *raw() {
     var id = this.params.id;
     var res = yield pastes.findOne({id: id}); 
-    if(!res) this.throw(404,'Invalid paste');
+    if (!res) this.throw(404,'Invalid paste');
     this.set('Content-Type', 'text');
     this.body = res.raw;
 }
@@ -49,7 +52,7 @@ function *raw() {
 function *show() {
     var id = this.params.id;
     var res = yield pastes.findOne({id: id}); 
-    if(!res) this.throw(404,'Invalid paste');
+    if (!res) this.throw(404,'Invalid paste');
     this.body = yield render('show', { paste: res });
 }
 
@@ -57,11 +60,11 @@ function *create() {
     var paste = yield parse(this); 
     var count = yield pastes.count({});
     var keylen = 2;
-    paste.id = Math.floor(Math.random()*16777215).toString(16).substr(0,keylen);
 
-    while(yield pastes.findOne({id: paste.id})) {
-       keylen++; 
-       paste.id = Math.floor(Math.random()*16777215).toString(16).substr(0,keylen);
+    paste.id = generateHex(keylen);
+    while (yield pastes.findOne({id: id})) {
+        keylen++; 
+        paste.id = generateHex(keylen);
     }
 
     paste.created_on = new Date;
@@ -87,6 +90,35 @@ function *create() {
 
     pastes.insert(paste);
     this.redirect('/'+paste.id);
+}
+
+function *upload() {
+    var filetypes = { 'image/jpeg': 'jpg', 'image/png': 'png', 'text/plain': 'txt', 'application/zip': 'zip' }
+    var keylen = 2;
+    var filename = generateHex(keylen);
+
+    while (yield pastes.findOne({filename: filename})) {
+        keylen++; 
+        filename = generateHex(keylen);
+    }
+
+    var parts = fileparse(this);
+    var part, filepath;
+
+    while (part = yield parts) {
+        if (!filetypes[part.mime]) break;
+        filepath = 'uploads/' + filename + '.' + filetypes[part.mime];
+        var stream = fs.createWriteStream('public/' + filepath);
+        part.pipe(stream);
+        console.log('Uploading %s -> %s', part.filename, stream.path);
+    }
+    
+    this.body = (filepath ? root + "/" + filepath : "invalid filetype"); 
+}
+
+
+function generateHex(keylen) {
+    return Math.floor(Math.random()*16777215).toString(16).substr(0,keylen);
 }
 
 app.use(serve(__dirname + '/public'), { defer: true });
