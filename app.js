@@ -62,7 +62,7 @@ function *create() {
     var keylen = 2;
 
     paste.id = generateHex(keylen);
-    while (yield pastes.findOne({id: id})) {
+    while (yield pastes.findOne({id: paste.id})) {
         keylen++; 
         paste.id = generateHex(keylen);
     }
@@ -70,7 +70,8 @@ function *create() {
     paste.created_on = new Date;
     paste.raw = paste.code;
 
-    paste.name = (paste.name != "" ? paste.name : "Untitled");
+    paste.name = (paste.name ? paste.name : "Untitled");
+    paste.syntax = (paste.syntax ? paste.syntax : "text");
 
     if(paste.syntax != "text") {
         var args = ['-l', paste.syntax, '-f', 'html', '-O', 'style=emacs,linenos=true'];
@@ -89,7 +90,9 @@ function *create() {
     }
 
     pastes.insert(paste);
-    this.redirect('/'+paste.id);
+
+    if (paste.return_path) this.body = root + "/" + paste.id;
+    else this.redirect('/'+paste.id); 
 }
 
 function *upload() {
