@@ -15,7 +15,7 @@
     "koa-router": "~3.1.4",
     "koa-static": "~1.4.5",
     "markdown": "~0.5.0",
-    "monk": "~0.9.0",
+    "monk": "~0.9.0"
   },
   "repository": {
     "type": "git",
