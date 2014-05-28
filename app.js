@@ -26,6 +26,7 @@ app.get('/:id', show);
 app.get('/f/:id', fork);
 app.get('/r/:id', raw);
 app.post('/create', create);
+app.post('/shorten', shorten);
 app.post('/upload', upload);
 
 var render = views(__dirname + '/views', { map: { jade: 'jade' }, default: 'jade' });
@@ -53,7 +54,25 @@ function *show() {
     var id = this.params.id;
     var res = yield pastes.findOne({id: id}); 
     if (!res) this.throw(404,'Invalid paste');
+    if (res.url) this.redirect(res.url);
     this.body = yield render('show', { paste: res });
+}
+
+function *shorten() {
+    var paste = yield parse(this);
+    var keylen = 2;
+
+    paste.id = generateHex(keylen);
+    while (yield pastes.findOne({id: paste.id})) {
+        keylen++; 
+        paste.id = generateHex(keylen);
+    }
+
+    paste.created_on = new Date;
+    paste.type = "url";
+    pastes.insert(paste);
+
+    this.body = root + "/" + paste.id;
 }
 
 function *create() {
