@@ -54,7 +54,11 @@ function *show() {
     var id = this.params.id;
     var res = yield pastes.findOne({id: id}); 
     if (!res) this.throw(404,'Invalid paste');
-    if (res.url) this.redirect(res.url);
+    if (res.url) {
+        this.status = 301;
+        this.redirect(res.url);
+    }
+
     this.body = yield render('show', { paste: res });
 }
 
