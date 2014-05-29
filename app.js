@@ -3,6 +3,7 @@ var fs = require('fs');
 var koa = require('koa');
 var logger = require('koa-logger');
 var markdown = require('markdown').markdown;
+var mime = require('./lib/mime.js').ext;
 var monk = require('monk');
 var parse = require('co-body');
 var router = require('koa-router');
@@ -128,17 +129,20 @@ function *upload() {
     }
 
     var parts = fileparse(this);
-    var part, filepath;
+    var part, filepath, extension;
 
     while (part = yield parts) {
-        if (!filetypes[part.mime]) break;
-        filepath = 'uploads/' + filename + '.' + filetypes[part.mime];
+        extension = mime.getExt(part.filename);
+        filepath = 'uploads/' + filename + extension;
         var stream = fs.createWriteStream('public/' + filepath);
         part.pipe(stream);
-        console.log('Uploading %s -> %s', part.filename, stream.path);
     }
-    
-    this.body = (filepath ? root + "/" + filepath : "invalid filetype"); 
+
+    var buf = fs.readFileSync('public/' + filepath); 
+    var mimetype = mime.parseMagicNumber(buf);
+
+    if(!filetypes[mimetype]) fs.unlinkSync('public/' + filepath);
+    this.body = (filetypes[mimetype] ? root + "/" + filepath : "invalid filetype"); 
 }
 
 
