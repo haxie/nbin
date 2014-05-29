@@ -1,6 +1,6 @@
 nbin
 ====
 
-Pastebin tool, file uploader, URL shortner.
+Pastebin tool, file uploader, URL shortener
 
 nodejs/koa/mongodb
