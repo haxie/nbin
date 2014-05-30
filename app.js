@@ -15,7 +15,7 @@ var wrap = require('co-monk');
 var db = monk('localhost/pastebin'); // Your database
 var collection = db.get('pastes');
 var pastes = wrap(collection);
-var root = "http://localhost:3000"; // Your server URL
+var root = 'http://localhost:3000'; // Your server URL
 
 var app = koa();
 
@@ -76,7 +76,7 @@ function *shorten() {
     paste.created_on = new Date;
     pastes.insert(paste);
 
-    this.body = root + "/" + paste.id;
+    this.body = root + '/' + paste.id;
 }
 
 function *create() {
@@ -93,28 +93,28 @@ function *create() {
     paste.created_on = new Date;
     paste.raw = paste.code;
 
-    paste.name = (paste.name ? paste.name : "Untitled");
-    paste.syntax = (paste.syntax ? paste.syntax : "text");
+    paste.name = (paste.name ? paste.name : 'Untitled');
+    paste.syntax = (paste.syntax ? paste.syntax : 'text');
 
-    if(paste.syntax != "text") {
+    if (paste.syntax != 'text') {
         var args = ['-l', paste.syntax, '-f', 'html', '-O', 'style=emacs,linenos=true'];
         var proc = spawn('pygmentize', args);
 
-        proc.stdout.on("data", function(data) {
+        proc.stdout.on('data', function(data) {
             paste.code = data;
         });
 
         proc.stdin.write(paste.code);
         proc.stdin.end();
 
-        yield proc.on.bind(proc, "exit");
+        yield proc.on.bind(proc, 'exit');
     } else {
         paste.code = markdown.toHTML(paste.code);
     }
 
     pastes.insert(paste);
 
-    if (paste.return_path) this.body = root + "/" + paste.id;
+    if (paste.return_path) this.body = root + '/' + paste.id;
     else this.redirect('/'+paste.id); 
 }
 
@@ -142,8 +142,8 @@ function *upload() {
     var buf = fs.readFileSync('public/' + filepath); 
     var mimetype = mime.getContentTypeBySig(buf);
 
-    if(!filetypes[mimetype]) fs.unlinkSync('public/' + filepath);
-    this.body = (filetypes[mimetype] ? root + "/" + filepath : "invalid filetype"); 
+    if (!filetypes[mimetype]) fs.unlinkSync('public/' + filepath);
+    this.body = (filetypes[mimetype] ? root + '/' + filepath : 'invalid filetype'); 
 }
 
 
