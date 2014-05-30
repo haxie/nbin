@@ -119,7 +119,8 @@ function *create() {
 }
 
 function *upload() {
-    var filetypes = { 'image/jpeg': 'jpg', 'image/png': 'png', 'text/plain': 'txt', 'application/zip': 'zip' }
+    // Allowed MIME-types
+    var filetypes = { 'image/jpeg': 'jpg', 'image/png': 'png', 'text/plain': 'txt', 'application/zip': 'zip', 'video/webm': 'webm' }
     var keylen = 2;
     var filename = generateHex(keylen);
 
