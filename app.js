@@ -140,7 +140,7 @@ function *upload() {
     }
 
     var buf = fs.readFileSync('public/' + filepath); 
-    var mimetype = mime.parseMagicNumber(buf);
+    var mimetype = mime.getContentTypeBySig(buf);
 
     if(!filetypes[mimetype]) fs.unlinkSync('public/' + filepath);
     this.body = (filetypes[mimetype] ? root + "/" + filepath : "invalid filetype"); 
