@@ -1,3 +1,4 @@
 .DS_STORE
 uploads/
 node_modules/
+npm-debug.log
