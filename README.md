@@ -16,8 +16,3 @@ $ curl --data-urlencode "url=$url" http://localhost:3000/shorten
 ``` sh
 $ curl -F "image=@$file" http://localhost:3000/upload
 ```
-
-
-## Demo
-
-Live version at http://hax.cm
